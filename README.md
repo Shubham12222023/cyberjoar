@@ -1,34 +1,41 @@
 # NeoMap Draw
 
-A modern React application for drawing and managing spatial features on an OpenStreetMap layer.
-This application enforces strict spatial constraints (non-overlapping polygons) and allows exporting data to GeoJSON.
+A React + TypeScript based web application that renders OpenStreetMap tiles and allows users to draw and manage geometrical features such as Polygon, Rectangle, Circle, and Line String.
+
+The application enforces non-overlapping rules for polygonal shapes and supports exporting all drawn features as GeoJSON.
+
+---
 
 ## Features
 
-- **Map Rendering**: OpenStreetMap tiles via Leaflet.
-- **Drawing Tools**: Draw Circles, Rectangles, Polygons, and LineStrings.
-- **Constraints Management**:
-  - **Non-overlapping**: New polygons that overlap existing ones are automatically trimmed.
-  - **Enclosure Prevention**: Shapes cannot be drawn fully inside existing ones, and vice versa.
-  - **LineStrings Exception**: LineStrings can freely cross other shapes.
-- **Dynamic Configuration**: Adjustable limits for the number of shapes per type.
-- **Export**: Download all drawn features as a valid GeoJSON FeatureCollection.
+- OpenStreetMap free tile rendering
+- Draw Polygon, Rectangle, Circle, and Line String
+- Non-overlapping constraint for polygonal shapes
+- Auto-trimming of partially overlapping polygons
+- Blocking of fully enclosed polygons with error feedback
+- GeoJSON export of all drawn features
+- Configurable limits for each shape type
 
-## Technologies
+---
 
-- **Frontend**: React 18+, TypeScript, Vite
-- **Styling**: Tailwind CSS v4, Lucide React (Icons)
-- **Map Library**: Leaflet, React-Leaflet
-- **Spatial Logic**: Turf.js
-- **State Management**: Zustand
+## Tech Stack
 
-## Setup & Run
+- React.js
+- TypeScript
+- Vite
+- OpenStreetMap
+- Turf.js
+- Tailwind CSS
 
-1. **Clone the repository**:
+---
+
+## Setup & Run Instructions
+
+1. Clone the repository:
    ```bash
-   git clone <repo-url>
-   cd task
+   git clone https://github.com/Shubham12222023/cyberjoar.git
    ```
+
 
 2. **Install Dependencies**:
    ```bash
@@ -48,23 +55,11 @@ This application enforces strict spatial constraints (non-overlapping polygons) 
 
 ## Geometric Logic Explanation
 
-The application uses **Turf.js** for spatial analysis.
-
-### Overlap Handling
-When a user finishes drawing a generic polygon (Polygon, Rectangle, or Circle):
-1. **Validation**: The new shape is checked against all existing polygonal features.
-2. **Enclosure Check**:
-   - If `turf.booleanContains(existing, new)` is true, the new shape is rejected (blocked).
-   - If `turf.booleanContains(new, existing)` is true, the new shape is rejected (blocked).
-3. **Intersection & Trimming**:
-   - If `turf.intersect(new, existing)` is found, we calculate the difference using `turf.difference(new, existing)`.
-   - The result becomes the new geometry.
-   - This process repeats for all overlapping existing shapes.
-   - If at any point the geometry disappears (fully covered), the shape is rejected.
-
-### Circles & Rectangles
-- **Circles** are approximated as Geodesic Polygons using `turf.circle`. They are stored as Polygons in the GeoJSON but tagged with a `radius` property.
-- **Rectangles** are converted to Polygons defined by their bounding box.
+The non-overlapping rule is applied only to polygonal features such as Polygon, Rectangle, and Circle.
+When a new polygon is drawn, the system checks for intersection with existing polygonal features.
+If a partial overlap is detected, the overlapping area is automatically trimmed and only the valid geometry is rendered.
+If a new polygon fully encloses an existing polygon, the action is blocked and an error message is shown.
+Line Strings are excluded from overlap constraints and are allowed to cross or overlap freely.
 
 ## Sample GeoJSON Export
 
@@ -81,13 +76,13 @@ When a user finishes drawing a generic polygon (Polygon, Rectangle, or Circle):
       },
       "properties": {
         "createdAt": 1715428800000,
-        "radius": 500.23  // Present if it was drawn as a circle
+        "radius": 500.23
       }
     }
   ]
 }
 ```
+> `radius` property is present only for circle geometries.
 
-## Contributing
-
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+## Live Demo
+https://cyberjoar-map.netlify.app/
